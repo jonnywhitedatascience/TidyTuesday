@@ -1,0 +1,132 @@
+---
+title: Tidy Tuesdays - 2020-04-07
+subject: Tour de France
+author: Jonny White
+website: jonnywhitedatascience.github.io
+date: 13/04/2020
+---
+
+Load libraries
+```{r}
+
+library(tidyverse)
+library(extrafont)
+library(remotes)
+library(tdf)
+
+loadfonts(device="win", quiet = TRUE)
+
+```
+
+My theme
+```{r}
+jwtheme<-theme(
+        panel.background = element_blank(),
+        panel.grid.major.x =  element_line(size=0.1, colour = "grey65"),
+        panel.grid.minor.x =  element_line(size=0.1, colour = "grey65"),
+        panel.grid.major.y = element_blank(),
+        plot.background = element_rect(fill="light blue"),
+        plot.title = element_text(color = "grey20", size = 14, hjust = -0, face="bold"),
+        plot.subtitle = element_text(color = "grey20", size = 10, hjust = 0, face="plain"),
+        plot.caption = element_text(color = "grey40", size = 8, hjust = 1, face="plain"),
+        axis.text.x = element_text(color = "grey20", size = 8, hjust = .5, vjust = .5, face = "plain"),
+        axis.text.y = element_text(color = "grey20", size = 8, hjust = 1,  face = "plain"),
+        axis.title.x = element_text(color = "grey20", size = 8, hjust = .5, vjust = .5, face = "plain"),
+        axis.title.y = element_text(color = "grey20", size = 8, hjust = .5, vjust = .5, face = "plain"),
+        strip.background =element_rect(fill="red"),
+        strip.text = element_text(colour = "white", size=10, face="plain" ),
+        text=element_text(family="Verdana"),
+        legend.position =  "none"
+)
+```
+
+The below code first of all creates a simple summary tibble *national_data* which includes nationality and a count.  Next it plots on column chart using ggplot and geom_col, with data labels from geom_text.  It then assigns various plot labels using labs, rotates the plot by 90 degrees and ends with my chatrt theme (which is a simple version of those found in the Economist)
+
+```{r}
+
+nationality_data <- editions %>% 
+  group_by(nationality) %>%
+  summarize(count=n())
+  
+nationality_data %>%
+  ggplot( 
+    aes(
+      x=reorder(nationality, count),
+      y=count)
+    )+
+  geom_col()+
+  geom_text(
+    aes(
+      label=count),
+      nudge_y=-0.5,
+      size=3,
+      colour="white")+
+  labs(
+    title="Tour de France",
+    subtitle="edition winner by nationality",
+    x="nationality",
+    y="edition wins",
+    caption = "source:  @rushworth_a"
+  )+
+  coord_flip()+
+  jwtheme
+```
+
+Next i want to create a matrix view of edition winners by nationality and year to see if there have been particular times of success for certain countries.  From the little i know of the Tour, Lance Armstrong was particularly successful, so this plot should demonstrate American dominance in the late 90's / early 00's?
+
+```{r}
+#prepare the data
+year_nationality_data<-
+  transmute(
+    editions,
+    year=as.numeric(format(as.Date(start_date, format-"%Y-%m-%d"),"%Y")),
+    nationality,
+    winner_name,
+    win_count=1,
+  ) %>%
+  group_by(nationality)%>%
+  mutate(latest_win_year=max(year), total_wins=sum(win_count))%>%
+  ungroup
+
+#plot the chart
+
+plot2<-
+  ggplot(
+  data=year_nationality_data,
+  mapping=aes(
+    x=reorder(nationality, latest_win_year),
+    y=year,
+    label=winner_name)
+  )+
+  
+  geom_tile(
+    mapping=aes(
+      fill=win_count
+    ),
+    colour="light blue",
+  )+
+  
+  labs(
+    title="Tour de France",
+    subtitle="Nationality of winner by year, sorted by most recent winning year",
+    x="nationality",
+    y="",
+    caption = 
+    "Author: Jon White \ @_jondwhite \n Tidy Tuesday 07/04/2020 | Source:  Alastair Rushworth \ @rushworth_a"
+  )+
+    
+  scale_y_continuous(
+    breaks = seq(1900,2020, by=10), 
+    )+
+    
+  coord_flip()+
+    
+  jwtheme+
+    
+  theme(
+    panel.grid.minor.x= element_blank()
+  )
+
+plot2
+```
+
