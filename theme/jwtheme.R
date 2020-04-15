@@ -1,7 +1,5 @@
 # This is my standard theme i have created and will update this as i go to ensure my outputs are standardised and look good and are accessible.
 
-## @knitr jdwtheme
-
 jwtheme<-theme(
   panel.background = element_blank(),
   panel.grid.major.x =  element_line(size=0.1, colour = "grey65"),
