@@ -20,7 +20,6 @@ loadfonts(device="win", quiet = TRUE)
 source("https://raw.githubusercontent.com/jonnywhitedatascience/TidyTuesday/master/theme/jwtheme.R")
 ```
 
-
 The below code first of all creates a simple summary tibble *national_data* which includes nationality and a count.  Next it plots on column chart using ggplot and geom_col, with data labels from geom_text.  It then assigns various plot labels using labs, rotates the plot by 90 degrees and ends with my chatrt theme (which is a simple version of those found in the Economist)
 
 ```{r}
