@@ -17,8 +17,7 @@ library(tdf)
 loadfonts(device="win", quiet = TRUE)
 
 #load my theme from external file
-source("jwtheme.R")
-
+source("https://raw.githubusercontent.com/jonnywhitedatascience/TidyTuesday/master/theme/jwtheme.R")
 ```
 
 
