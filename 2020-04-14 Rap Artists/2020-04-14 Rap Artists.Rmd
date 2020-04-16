@@ -1,0 +1,46 @@
+---
+title: Tidy Tuesdays - 2020-04-14
+subject: Rap Artists
+link: https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-04-14
+author: Jonny White
+website: jonnywhitedatascience.github.io
+date: 15/04/2020
+---
+
+Load libraries
+```{r}
+
+library(tidyverse)
+library(extrafont)
+
+loadfonts(device="win", quiet = TRUE)
+
+#load data
+
+polls <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-04-14/polls.csv')
+rankings <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-04-14/rankings.csv')
+
+#load my theme from external file
+source("https://raw.githubusercontent.com/jonnywhitedatascience/TidyTuesday/master/theme/jwtheme.R")
+```
+
+
+```{r}
+  rankings %>%
+  filter(year>=1980) %>%
+  group_by(decade= 10*floor(year/10)) %>%
+  summarise(total_titles = n(),
+            average_points=mean(points),
+            max_points=max(points)
+            )%>%
+  ggplot( 
+    aes(
+      x=decade,
+      y=average_points)
+    )+
+  geom_line()+
+  jwtheme
+
+```
+
+
